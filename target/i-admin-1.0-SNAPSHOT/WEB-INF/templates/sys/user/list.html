@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>会员列表</title>
+        <header th:replace="header::html"></header>
+    </head>
+    <body>
+        <div class="x-nav">
+          <span class="layui-breadcrumb">
+            <a href="">首页</a>
+            <a href="">演示</a>
+            <a>
+              <cite>导航元素</cite></a>
+          </span>
+          <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right" onclick="location.reload()" title="刷新">
+            <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i></a>
+        </div>
+        <div class="layui-fluid">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-body ">
+                            <form class="layui-form layui-col-space5">
+                                <div class="layui-inline layui-show-xs-block">
+                                    <input type="text" name="username"  placeholder="请输入用户名" autocomplete="off" class="layui-input">
+                                </div>
+                                <div class="layui-inline layui-show-xs-block">
+                                    <button class="layui-btn"  lay-submit="" lay-filter="sreach"><i class="layui-icon">&#xe615;</i></button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="layui-card-header">
+                            <shiro:hasPermission name="sys:user:delete">
+                            <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
+                            </shiro:hasPermission>
+                            <button class="layui-btn" onclick="xadmin.open('添加用户',ctxPath+'/sys/user/add',600,500)"><i class="layui-icon"></i>添加</button>
+                        </div>
+                        <div class="layui-card-body layui-table-body layui-table-main">
+                            <table class="layui-table layui-form" id="lay_table">
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> 
+    </body>
+    <script>
+      layui.use(['table','laydate','form'], function(){
+        var laydate = layui.laydate;
+        var  form = layui.form;
+        var table = layui.table;
+        //执行一个laydate实例
+        laydate.render({
+          elem: '#start' //指定元素
+        });
+        //执行一个laydate实例
+        laydate.render({
+          elem: '#end' //指定元素
+        });
+          table.render({
+              elem: '#lay_table'
+              ,height: 420
+              ,url: ctxPath+'/sys/user/data' //数据接口
+              ,title: '用户表'
+              ,page: true //开启分页
+             // ,toolbar: 'default' //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
+             // ,totalRow: true //开启合计行
+              ,cols: [
+                  [ //表头
+                      {type: 'checkbox', fixed: 'left'}
+                      ,{field: 'id', title: 'ID', width:80, sort: true, fixed: 'left', totalRowText: '合计：'}
+                      ,{field: 'username', title: '用户名', width:100}
+                      ,{field: 'nickname', title: '昵称', width: 150, sort: true, totalRow: true}
+                      ,{field: 'sex', title: '性别', width:80, sort: true, templet:function (d) {if(d.sex==1){return "男";}else{return "女";}}}
+                      ,{field: 'phone', title: '联系电话', width: 150, sort: true, totalRow: true}
+                      ,{field: 'telephone', title: '手机号', width:150}
+                      ,{field: 'status', title: '状态', width:80, templet:'#statusTpl'}
+                      ,{field: 'createTime', title: '创建时间', width: 150}
+                      ,{field: 'option', title: '操作', width: 150,templet:'#optionTpl'}
+                  ]
+              ]
+          });
+
+      });
+
+       /*用户-停用*/
+      function member_stop(obj,id,status){
+          layer.confirm('确认要停用/启用吗？',function(index){
+              $.ajax({
+                  url: ctxPath+'/sys/user/status',
+                  type: 'post',
+                  data: {"id":id},
+                  dataType: 'json',
+                  success: function (response) {
+                      console.log(response)
+                      if (response.code == 200) {
+                          if(status==1){
+                              //发异步把用户状态进行更改
+                              layer.msg('已停用!',{icon: 5,time:1000});
+                          }else{
+                              layer.msg('已启用!',{icon: 5,time:1000});
+                          }
+                          location.reload();
+                      } else {
+                          layer.alert(response.msg, {icon: 5, offset: '0px'});
+                      }
+                  },
+                  error:function(error){
+                      layer.msg(error.status);
+                  }
+              });
+
+              
+          });
+      }
+
+      /*用户-删除*/
+      function member_del(obj,id){
+          layer.confirm('确认要删除吗？',function(index){
+              //发异步删除数据
+              $(obj).parents("tr").remove();
+              layer.msg('已删除!',{icon:1,time:1000});
+          });
+      }
+
+
+
+      function delAll (argument) {
+        var ids = [];
+
+        // 获取选中的id 
+        $('tbody input').each(function(index, el) {
+            if($(this).prop('checked')){
+               ids.push($(this).val())
+            }
+        });
+  
+        layer.confirm('确认要删除吗？'+ids.toString(),function(index){
+            //捉到所有被选中的，发异步进行删除
+            layer.msg('删除成功', {icon: 1});
+            $(".layui-form-checked").not('.header').parents('tr').remove();
+        });
+      }
+    </script>
+    <!-- 状态模板文件 -->
+    <script type="text/html" id="statusTpl">
+        {{#  if(d.status == 1){ }}
+        <span class="layui-btn layui-btn-normal layui-btn-mini">正常</span>
+        {{#  } else if(d.status==0) { }}
+        <span class="layui-btn layui-btn-normal layui-btn-mini layui-btn-disabled">禁用</span>
+        {{#  } else{ }}
+        <span class="layui-btn layui-btn-normal layui-btn-mini layui-btn-danger">锁定</span>
+        {{#  } }}
+    </script>
+    <!-- 操作模板文件  -->
+    <script type="text/html" id="optionTpl">
+        <shiro:hasPermission name="sys:user:status">
+        {{#  if(d.status == 1){ }}
+        <a onclick="member_stop(this,{{d.id}},{{d.status}})" href="javascript:;"  title="启用">
+            <i class="layui-icon">&#xe601;</i>
+        </a>
+        {{#  } else{ }}
+        <a onclick="member_stop(this,{{d.id}},{{d.status}})" href="javascript:;"  title="禁用">
+            <i class="layui-icon">&#xe62f;</i>
+        </a>
+        {{#  } }}
+        </shiro:hasPermission>
+        <a title="编辑"  onclick="xadmin.open('编辑','member-edit.html',600,400)" href="javascript:;">
+            <i class="layui-icon">&#xe642;</i>
+        </a>
+        <a onclick="xadmin.open('修改密码','member-password.html',600,400)" title="修改密码" href="javascript:;">
+            <i class="layui-icon">&#xe631;</i>
+        </a>
+        <a title="删除" onclick="member_del(this,'要删除的id')" href="javascript:;">
+            <i class="layui-icon">&#xe640;</i>
+        </a>
+    </script>
+
+</html>

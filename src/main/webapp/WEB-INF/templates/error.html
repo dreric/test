@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html class="x-admin-sm"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>后台登录-i-admin1.0</title>
+    <header th:replace="header::html"></header>
+</head>
+<body>
+    <div class="layui-container">
+        <div class="fly-panel">
+            <div class="fly-none">
+                <h1 th:text="${code}"></h1>
+                <h2 th:text="${error}"></h2>
+                <p th:text="${msg}"></p>
+                <button class="btn" type="button" onclick="window.history.go(-1);">返回</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

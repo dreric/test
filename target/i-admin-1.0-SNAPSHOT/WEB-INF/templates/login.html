@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html class="x-admin-sm"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>后台登录-i-admin1.0</title>
+    <header th:replace="header::html"></header>
+    <link rel="stylesheet" th:href="@{/static/xadmin/css/login.css}">
+</head>
+<body class="login-bg">
+
+<div class="login layui-anim layui-anim-up">
+    <div class="message">x-admin2.0-管理登录</div>
+    <div id="darkbannerwrap"></div>
+    <form id="data-form" method="post" class="layui-form" >
+        <input name="username" placeholder="用户名"  type="text" lay-verify="required" class="layui-input" >
+        <hr class="hr15">
+        <input name="password" lay-verify="required" placeholder="密码"  type="password" class="layui-input">
+        <hr class="hr15">
+        <input id="form-submit" value="登录" lay-submit lay-filter="login" style="width:100%;" type="button">
+        <hr class="hr20" >
+    </form>
+</div>
+
+<script>
+    $(function  () {
+        layui.use('form', function(){
+            var form = layui.form;
+            // layer.msg('玩命卖萌中', function(){
+            //   //关闭后的操作
+            //   });
+            $("#form-submit").on('click', function(data){
+                $.ajax({
+                    url: ctxPath+'/login',
+                    type: 'post',
+                    data: $("#data-form").serialize(),
+                    dataType: 'json',
+                    success: function (response) {
+                        console.log(response)
+                        if (response.code == 0) {
+                            layer.msg(response.msg, {icon: 1, time: 1000, offset: '0px'});
+                            window.location.href = ctxPath+'/index';
+                        } else {
+                            layer.alert(response.msg, {icon: 5, offset: '0px'});
+                        }
+                    },
+                    error:function(error){
+                        layer.msg(error.status);
+                    }
+                });
+            });
+        });
+    })
+
+</script>
+<!-- 底部结束 -->
+</body>
+
+</html>
