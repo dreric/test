@@ -1,6 +1,5 @@
 package com.lxcm.sys.controller;
 
-import com.baomidou.mybatisplus.extension.api.R;
 import com.lxcm.common.model.ResponseCode;
 import com.lxcm.common.model.Results;
 import com.lxcm.common.model.TreeNode;
@@ -20,9 +19,9 @@ import java.util.List;
 
 /**
  * @Classname LoginController
- * @Description TODO
+ * @Description 登录 菜单 首页 登出
  * @Date 2020-03-17 9:55
- * @Created by lx
+ * @author by lx
  */
 @Controller
 @RequestMapping
