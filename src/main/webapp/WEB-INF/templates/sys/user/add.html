@@ -52,7 +52,7 @@
                     </div>
                     <div class="layui-form-item">
                         <label for="L_repass" class="layui-form-label"></label>
-                        <button id="form-submit" class="layui-btn" lay-filter="add" lay-submit="">增加</button></div>
+                        <button type="button" id="form-submit" class="layui-btn" lay-filter="add" lay-submit="">增加</button></div>
                 </form>
             </div>
         </div>
@@ -77,7 +77,8 @@
                 });
 
                 //监听提交
-                $("#form-submit").on('click',
+               // $("#form-submit").on('click',
+                form.on('submit(add)',
                 function(data) {
                     $.ajax({
                         url: ctxPath+'/sys/user/add',
@@ -94,7 +95,8 @@
                                     xadmin.close();
 
                                     // 可以对父窗口进行刷新
-                                    xadmin.father_reload();
+                                   // xadmin.father_reload();
+                                    xadmin.father_table_reload();
                                 });
                             } else {
                                 layer.alert(response.msg, {icon: 5, offset: '0px'});

@@ -120,9 +120,24 @@
       /*用户-删除*/
       function member_del(obj,id){
           layer.confirm('确认要删除吗？',function(index){
-              //发异步删除数据
-              $(obj).parents("tr").remove();
-              layer.msg('已删除!',{icon:1,time:1000});
+              $.ajax({
+                  url: ctxPath+'sys/user/delete/'+id,
+                  type: 'get',
+                  success: function (response) {
+                      console.log(response)
+                      if (response.code == 200) {
+                          layer.msg('已删除!',{icon:1,time:1000});
+                            //刷新表格
+                          $(".layui-laypage-btn").click();
+                      } else {
+                          layer.alert(response.msg, {icon: 5, offset: '0px'});
+                      }
+                  },
+                  error:function(error){
+                      layer.msg(error.status);
+                  }
+              });
+
           });
       }
 
@@ -174,7 +189,7 @@
         <a onclick="xadmin.open('修改密码','member-password.html',600,400)" title="修改密码" href="javascript:;">
             <i class="layui-icon">&#xe631;</i>
         </a>
-        <a title="删除" onclick="member_del(this,'要删除的id')" href="javascript:;">
+        <a title="删除" onclick="member_del(this,{{d.id}})" href="javascript:;">
             <i class="layui-icon">&#xe640;</i>
         </a>
     </script>
