@@ -2,7 +2,9 @@ package com.lxcm.sys.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.lxcm.common.model.ResponseCode;
 import com.lxcm.common.model.Results;
+import com.lxcm.common.util.MD5Util;
 import com.lxcm.sys.entity.RoleEntity;
 import com.lxcm.sys.entity.UserEntity;
 import com.lxcm.sys.entity.UserRoleEntity;
@@ -145,10 +147,8 @@ public class UserController {
         model.addAttribute("userId", userId);
         return "sys/assign_role";
     }
-
     /**
      * 给用户分配角色
-     *
      * @param userId
      * @return
      */
@@ -176,6 +176,29 @@ public class UserController {
             user.setStatus(UserEntity.Status.VALID);
         }
         userService.updateById(user);
+        return Results.success();
+    }
+
+    @GetMapping("/password/{id}")
+    @RequiresPermissions("sys:user:update")
+    public String password(@PathVariable Long id,Model model){
+        model.addAttribute("user", userService.getById(id));
+        return "sys/user/password";
+    }
+    @PostMapping("/password")
+    @ResponseBody
+    @RequiresPermissions("sys:user:update")
+    public Results password(Long id,String newpass,String repass){
+        if(id==null){
+            return Results.failure(ResponseCode.PARAMETER_MISSING);
+        }
+        if(newpass.equals(repass)){
+           UserEntity user= userService.getById(id);
+           user.setPassword(MD5Util.md5_private_salt(newpass,user.getSalt()));
+           userService.updateById(user);
+        }else{
+            return Results.failure(ResponseCode.NOSAMEPASSWORD);
+        }
         return Results.success();
     }
 }
