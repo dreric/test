@@ -1,8 +1,9 @@
 package com.lxcm.sys.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.api.R;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lxcm.common.model.Results;
+import com.lxcm.sys.entity.RoleEntity;
 import com.lxcm.sys.entity.UserEntity;
 import com.lxcm.sys.entity.UserRoleEntity;
 import com.lxcm.sys.service.IUserRoleService;
@@ -51,17 +52,14 @@ public class UserController {
     @GetMapping("/data")
     @ResponseBody
     @RequiresPermissions("sys:user:list")
-    public Results data(String username) {
+    public Results data(String username, Page<UserEntity> page) {
 
         QueryWrapper<UserEntity> param = new QueryWrapper<UserEntity>();
         if (!StringUtils.isEmpty(username)) {
             param.like("username", username);
         }
-        // 查询满足条件的数据集
-        List<UserEntity> rows = userService.list(param);
-        // 查询满足条件的总记录数
-        int total = userService.count(param);
-        return Results.success(total,rows);
+        userService.page(page,param);
+        return Results.success(page);
     }
     /**
      * 跳转到新增页面
@@ -93,7 +91,7 @@ public class UserController {
     @RequiresPermissions("sys:user:update")
     public String update(@PathVariable Long id, Model model) {
         model.addAttribute("user", userService.getById(id));
-        return "sys/update";
+        return "sys/user/edit";
     }
 
     /**
@@ -109,10 +107,8 @@ public class UserController {
         userService.updateById(user);
         return Results.success();
     }
-
     /**
      * 删除
-     *
      * @param id
      * @return
      */
