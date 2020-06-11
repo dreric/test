@@ -30,34 +30,75 @@ public class ShiroRealm extends AuthorizingRealm {
         String username = token.getUsername();
         String password = new String(token.getPassword());
 
+
         // 3.根据用户名去DB查询对应的用户信息
         QueryWrapper<UserEntity> param = new QueryWrapper<UserEntity>();
         param.eq("username",username);
         UserEntity user = dao.selectOne(param);
-
-        password = MD5Util.md5_private_salt(password,user.getSalt());
-        System.out.println(password);
-        if(username==null||username.equals("")){
-            throw new UnknownAccountException("用户名不存在");
+        if(user==null){
+            QueryWrapper<UserEntity> param2 = new QueryWrapper<UserEntity>();
+            param2.eq("email",username);
+            UserEntity byUserEmail = dao.selectOne(param2);
+            if(byUserEmail==null){
+                QueryWrapper<UserEntity> param3 = new QueryWrapper<UserEntity>();
+                param3.eq("phone",username);
+                UserEntity byUserPhone = dao.selectOne(param3);
+                if(byUserPhone==null){
+                    throw new UnknownAccountException("账号不存在");
+                }else{
+                    password = MD5Util.md5_private_salt(password,byUserPhone.getSalt());
+                    // 两个密码的密文进行比对
+                    if (!byUserPhone.getPassword().equals(password)) {
+                        throw new CredentialsException("密码错误");
+                    }
+                    if (byUserPhone.getStatus() == 0) {
+                        throw new DisabledAccountException("账号被禁用");
+                    }
+                    if (byUserPhone.getStatus() == 2) {
+                        throw new LockedAccountException("账号被锁定");
+                    }
+                    System.out.println("认证成功...");
+                    // 创建简单认证信息对象
+                    SimpleAuthenticationInfo info =
+                            new SimpleAuthenticationInfo(byUserPhone, token.getCredentials(), getName());
+                    return info;
+                }
+            }else{
+                password = MD5Util.md5_private_salt(password,byUserEmail.getSalt());
+                // 两个密码的密文进行比对
+                if (!byUserEmail.getPassword().equals(password)) {
+                    throw new CredentialsException("密码错误");
+                }
+                if (byUserEmail.getStatus() == 0) {
+                    throw new DisabledAccountException("账号被禁用");
+                }
+                if (byUserEmail.getStatus() == 2) {
+                    throw new LockedAccountException("账号被锁定");
+                }
+                System.out.println("认证成功...");
+                // 创建简单认证信息对象
+                SimpleAuthenticationInfo info =
+                        new SimpleAuthenticationInfo(byUserEmail, token.getCredentials(), getName());
+                return info;
+            }
+        }else{
+            password = MD5Util.md5_private_salt(password,user.getSalt());
+            // 两个密码的密文进行比对
+            if (!user.getPassword().equals(password)) {
+                throw new CredentialsException("密码错误");
+            }
+            if (user.getStatus() == 0) {
+                throw new DisabledAccountException("账号被禁用");
+            }
+            if (user.getStatus() == 2) {
+                throw new LockedAccountException("账号被锁定");
+            }
+            System.out.println("认证成功...");
+            // 创建简单认证信息对象
+            SimpleAuthenticationInfo info =
+                    new SimpleAuthenticationInfo(user, token.getCredentials(), getName());
+            return info;
         }
-        if(user == null) {
-            throw new UnknownAccountException("用户名不存在");
-        }
-        // 两个密码的密文进行比对
-        if (!user.getPassword().equals(password)) {
-            throw new CredentialsException("密码错误");
-        }
-        if (user.getStatus() == 0) {
-            throw new DisabledAccountException("账号被禁用");
-        }
-        if (user.getStatus() == 2) {
-            throw new LockedAccountException("账号被锁定");
-        }
-        System.out.println("认证成功...");
-        // 创建简单认证信息对象
-        SimpleAuthenticationInfo info =
-                new SimpleAuthenticationInfo(user, token.getCredentials(), getName());
-        return info;
     }
 
     @Override
