@@ -13,6 +13,7 @@ public enum ResponseCode {
     FATL(500,"请求失败"),
     PARAMETER_MISSING(600,"参数缺失"),
     UNAUTHORIZED(401,"未授权"),
+    NOSAMEPASSWORD(700,"两次输入密码不同"),
 
     UPLOUD_FATL(801,"上传失败"),
     ;
