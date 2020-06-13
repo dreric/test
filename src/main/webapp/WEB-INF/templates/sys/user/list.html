@@ -44,7 +44,7 @@
                 <button class="layui-btn" onclick="xadmin.open('添加用户',ctxPath+'/sys/user/add',600,500)"><i class="layui-icon"></i>添加</button>
             </shiro:hasPermission>
             <shiro:hasPermission name="sys:user:assign:role">
-                <button class="layui-btn" lay-event = "assignRole">分配角色</button>
+                <button class="layui-btn layui-btn-normal" lay-event = "assignRole">分配角色</button>
             </shiro:hasPermission>
         </div >
     </script>
@@ -97,6 +97,12 @@
                           }
                           break;
                       case 'delAll':
+                          var data = checkStatus.data;
+                          if(data.length>0){
+                              delAll(data);
+                          }else{
+                              layer.msg("请选择进行操作的数据");
+                          }
 
                           break;
                   };
@@ -162,20 +168,33 @@
             layer.msg(obj[0].id);
         }
 
-      function delAll (argument) {
+      function delAll (obj) {
         var ids = [];
-
-        // 获取选中的id 
-        $('tbody input').each(function(index, el) {
-            if($(this).prop('checked')){
-               ids.push($(this).val())
-            }
-        });
-  
+        for(var i=0;i<obj.length;i++){
+            ids.push(obj[i].id);
+        }
         layer.confirm('确认要删除吗？'+ids.toString(),function(index){
-            //捉到所有被选中的，发异步进行删除
-            layer.msg('删除成功', {icon: 1});
-            $(".layui-form-checked").not('.header').parents('tr').remove();
+            $.ajax({
+                url: ctxPath+'sys/user/deletebatch',
+                contentType: "application/json; charset=UTF-8",//发送给服务器的是json数据
+                type: 'post',
+                dateType: 'json',
+                data: JSON.stringify(ids),
+                success: function (response) {
+                    console.log(response)
+                    if (response.code == 200) {
+                        //捉到所有被选中的，发异步进行删除
+                        layer.msg('删除成功', {icon: 1});
+                        //刷新表格
+                        $(".layui-laypage-btn").click();
+                    } else {
+                        layer.alert(response.msg, {icon: 5, offset: '0px'});
+                    }
+                },
+                error:function(error){
+                    layer.msg(error.status);
+                }
+            });
         });
       }
     </script>
