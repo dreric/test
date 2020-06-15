@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html class="x-admin-sm"  xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns:th="http://www.thymeleaf.org">
+    
+    <head>
+        <meta charset="UTF-8">
+        <title>角色添加页面</title>
+        <header th:replace="header::html"></header>
+    </head>
+    <body>
+        <div class="layui-fluid">
+            <div class="layui-row">
+                <form id="data-form" class="layui-form">
+                    <div class="layui-form-item">
+                        <label for="L_name" class="layui-form-label">
+                            <span class="x-red">*</span>角色名称</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="L_name" name="name" required="" lay-verify="required" autocomplete="off" class="layui-input"></div>
+                    </div>
+
+                    <div class="layui-form-item">
+                        <label for="L_remark" class="layui-form-label">
+                            <span class="x-red">*</span>角色描述</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="L_remark" name="remark" required="" lay-verify="remark" autocomplete="off" class="layui-input"></div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label"></label>
+                        <button type="button" id="form-submit" class="layui-btn" lay-filter="add" lay-submit="">增加</button></div>
+                </form>
+            </div>
+        </div>
+        <script>layui.use(['form', 'layer','jquery'],
+            function() {
+                $ = layui.jquery;
+                var form = layui.form,
+                layer = layui.layer;
+                //自定义验证规则
+                form.verify({
+                });
+
+                //监听提交
+               // $("#form-submit").on('click',
+                form.on('submit(add)',
+                function(data) {
+                    $.ajax({
+                        url: ctxPath+'/sys/role/add',
+                        type: 'post',
+                        data: $("#data-form").serialize(),
+                        dataType: 'json',
+                        success: function (response) {
+                            console.log(response)
+                            if (response.code == 200) {
+                                layer.alert("增加成功", {
+                                        icon: 6
+                                    },function() {
+                                    //关闭当前frame
+                                    xadmin.close();
+
+                                    // 可以对父窗口进行刷新
+                                   // xadmin.father_reload();
+                                    xadmin.father_table_reload();
+                                });
+                            } else {
+                                layer.alert(response.msg, {icon: 5, offset: '0px'});
+                            }
+                        },
+                        error:function(error){
+                            layer.msg(error.status);
+                        }
+                    });
+                    return false;
+                });
+
+            });</script>
+    </body>
+
+</html>
