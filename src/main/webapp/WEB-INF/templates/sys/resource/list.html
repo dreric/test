@@ -39,6 +39,9 @@
             <shiro:hasPermission name="sys:resource:add">
                 <button class="layui-btn" onclick="xadmin.open('添加资源',ctxPath+'/sys/role/add',600,500)"><i class="layui-icon"></i>添加</button>
             </shiro:hasPermission>
+            <button class = "layui-btn " lay-event = "expandAll">全部展开</button>
+            <button class = "layui-btn " lay-event = "foldAll">全部折叠</button>
+            </div>
         </div >
     </script>
     <script>
@@ -52,8 +55,10 @@
             var ptable = treeTable.render({
                 elem:"#lay_table"
                 ,url:ctxPath+'/sys/resource/data'
-                ,toolbar: 'default'
+                ,toolbar: '#toolbarTable'
+                ,id: 'treeTable'
                 ,height: 'full-200'
+                ,cellMinWidth: 80
                 ,tree:{
                     iconIndex: 2//树形图标显示在第几列
                     ,isPidData: true//
@@ -63,18 +68,45 @@
                 ,page: false
                 ,cols: [
                     [
-                        {type: 'checkbox', fixed: 'left'}
-                    ,{field:'resourceId',width:100, title: 'id'}
-                    ,{field:'name', width:300, title: '资源名称'}
-                    ,{field:'icon', width:100, title: '目录图标'}
-                    ,{field:'type', width:100, title: '类型',templet:'#typeTpl'}
-                    ,{field:'url', width:200, title: '请求路径'}
-                    ,{field:'permission',width:200, title: '权限标识'}
+                        {type: 'checkbox',fixed: 'left'}
+                    ,{field:'resourceId',title: 'ID'}
+                    ,{field:'name',title: '资源名称'}
+                    ,{field:'icon',title: '目录图标'}
+                    ,{field:'type',title: '类型',templet:'#typeTpl'}
+                    ,{field:'url', title: '请求路径'}
+                    ,{field:'permission',title: '权限标识'}
 
                 ]
                 ]
 
             });
+            //头工具栏事件
+            treeTable.on('toolbar(lay_table)',
+                function(obj) {
+                    switch (obj.event) {
+                        case 'expandAll':
+                            ptable.expandAll();
+                            break;
+                        case 'foldAll':
+                            ptable.foldAll();
+                            break;
+                        case 'delAll':
+                            var ids = [];
+                            ptable.checkStatus().map(function (d){
+                                ids.push(d.resourceId);
+                            });
+                            layer.msg(ids.toString());
+                            break;
+                        case 'search':
+                            var keywords = $('#edtSearch').val();
+                            if (keywords) {
+                                ptable.filterData(keywords);
+                            } else {
+                                ptable.clearFilter();
+                            }
+                            break;
+                    };
+                });
         })
 
       function assignResource(obj){

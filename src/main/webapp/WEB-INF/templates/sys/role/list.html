@@ -73,17 +73,18 @@
               ,url: ctxPath+'/sys/role/data' //数据接口
               ,title: '角色表'
               ,page: true //开启分页
+              ,cellMinWidth: 80
               ,toolbar: '#toolbarTable' //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
              // ,totalRow: true //开启合计行
               ,cols: [
                   [ //表头
                       {type: 'checkbox', fixed: 'left'}
-                      ,{field: 'roleId', title: 'ID', width:80, sort: true, fixed: 'left', totalRowText: '合计：'}
-                      ,{field: 'name', title: '角色名称', width:100}
-                      ,{field: 'remark', title: '角色描述', width: 150, sort: true, totalRow: true}
-                      ,{field: 'createTime', title: '创建时间', width: 150}
-                      ,{field: 'updateTime', title: '更新时间', width: 150}
-                      ,{field: 'option', title: '操作', width: 150,templet:'#optionTpl'}
+                      ,{field: 'roleId', title: 'ID',  sort: true, fixed: 'left', totalRowText: '合计：'}
+                      ,{field: 'name', title: '角色名称'}
+                      ,{field: 'remark', title: '角色描述',  sort: true, totalRow: true}
+                      ,{field: 'createTime', title: '创建时间'}
+                      ,{field: 'updateTime', title: '更新时间'}
+                      ,{field: 'option', title: '操作', templet:'#optionTpl'}
                   ]
               ]
           });
