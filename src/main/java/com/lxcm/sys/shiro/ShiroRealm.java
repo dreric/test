@@ -29,8 +29,6 @@ public class ShiroRealm extends AuthorizingRealm {
         UsernamePasswordToken token = (UsernamePasswordToken) authenticationToken;
         String username = token.getUsername();
         String password = new String(token.getPassword());
-
-
         // 3.根据用户名去DB查询对应的用户信息
         QueryWrapper<UserEntity> param = new QueryWrapper<UserEntity>();
         param.eq("username",username);
