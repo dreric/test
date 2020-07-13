@@ -25,11 +25,11 @@
                                 </div>
                             </form>
                         </div>
-                        <div class="layui-card-body layui-table-body layui-table-main">
+
                             <table class="layui-table layui-form" id="lay_table" lay-filter="lay_table">
 
                             </table>
-                        </div>
+
                     </div>
                 </div>
             </div>
@@ -66,21 +66,20 @@
               ,url: ctxPath+'/sys/user/data' //数据接口
               ,title: '用户表'
               ,page: true //开启分页
-              ,cellMinWidth: 80
               ,toolbar: '#toolbarTable' //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
-             // ,totalRow: true //开启合计行
+              ,cellMinWidth: 80
               ,cols: [
                   [ //表头
                       {type: 'checkbox', fixed: 'left'}
-                      ,{field: 'id', title: 'ID', sort: true, fixed: 'left', totalRowText: '合计：'}
-                      ,{field: 'username', title: '用户名'}
-                      ,{field: 'nickname', title: '昵称',  sort: true, totalRow: true}
-                      ,{field: 'sex', title: '性别',  sort: true, templet:function (d) {if(d.sex==1){return "男";}else{return "女";}}}
-                      ,{field: 'phone', title: '联系电话',  sort: true, totalRow: true}
-                      ,{field: 'telephone', title: '手机号'}
-                      ,{field: 'status', title: '状态',  templet:'#statusTpl'}
-                      ,{field: 'createTime', title: '创建时间'}
-                      ,{field: 'option', title: '操作', templet:'#optionTpl'}
+                      ,{field: 'id', title: 'ID',sort: true,width:30}
+                      ,{field: 'username', title: '用户名',width:80}
+                      ,{field: 'nickname', title: '昵称',width:80 }
+                      ,{field: 'sex', title: '性别', width:80, sort: true, templet:function (d) {if(d.sex==1){return "男";}else{return "女";}}}
+                      ,{field: 'phone', title: '联系电话',width:120}
+                      ,{field: 'telephone', title: '手机号',width:120}
+                      ,{field: 'status', title: '状态',  templet:'#statusTpl',width:80}
+                      ,{field: 'createTime', title: '创建时间',width:180}
+                      ,{field: 'option', title: '操作', templet:'#optionTpl',width:150}
                   ]
               ]
           });
