@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html class="x-admin-sm" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+      xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <title>角色列表</title>
+        <header th:replace="header::html"></header>
+    </head>
+    <body>
+        <div class="layui-fluid">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-body layui-table-body layui-table-main">
+                            <table class="layui-table layui-form" id="lay_table" lay-filter="lay_table">
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> 
+    </body>
+    <script type="text/html" id="toolbarTable">
+        <div class = "layui-btn-container" >
+            <shiro:hasPermission name="sys:role:delete">
+                <button class = "layui-btn layui-btn-danger" lay-event = "selectRole">选择角色</button>
+            </shiro:hasPermission>
+        </div >
+    </script>
+    <script>
+      layui.use(['table','laydate','form'], function(){
+        var laydate = layui.laydate;
+        var  form = layui.form;
+        var table = layui.table;
+        //执行一个laydate实例
+        laydate.render({
+          elem: '#start' //指定元素
+        });
+        //执行一个laydate实例
+        laydate.render({
+          elem: '#end' //指定元素
+        });
+          table.render({
+              elem: '#lay_table'
+              ,height: 350
+              ,url: ctxPath+'/sys/role/data' //数据接口
+              ,title: '角色表'
+              ,toolbar: '#toolbarTable' //开启工具栏，此处显示默认图标，可以自定义模板，详见文档
+              ,page: true //开启分页
+             // ,totalRow: true //开启合计行
+              ,cellMinWidth: 80
+              ,cols: [
+                  [ //表头
+                      {type: 'checkbox', fixed: 'left'}
+                      ,{field: 'roleId', title: 'ID',  sort: true}
+                      ,{field: 'name', title: '角色名称'}
+                      ,{field: 'remark', title: '角色描述',  sort: true, totalRow: true}
+
+                  ]
+              ]
+          });
+          //头工具栏事件
+          table.on('toolbar(lay_table)',
+              function(obj) {
+                  var checkStatus = table.checkStatus(obj.config.id);
+                  switch (obj.event) {
+                      case 'selectRole':
+                          var data = checkStatus.data;
+                          if(data.length==1){
+                              assignResource(data);
+                          }else{
+                              layer.msg("请选择单条数据进行操作");
+                          }
+                          break;
+                  };
+              });
+      });
+    </script>
+
+
+</html>

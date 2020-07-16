@@ -168,7 +168,8 @@
       }
       /*用户-分配角色*/
         function assignRole(obj) {
-            layer.msg(obj[0].id);
+            //layer.msg(obj[0].id);
+            xadmin.open('选择角色',ctxPath+'/sys/user/assign/role/'+obj[0].id,600,500);
         }
 
       function delAll (obj) {
