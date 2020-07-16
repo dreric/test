@@ -140,10 +140,8 @@ public class UserController {
     @GetMapping("/assign/role/{userId}")
     @RequiresPermissions("sys:user:assign:role")
     public String assignRole(@PathVariable Long userId, Model model) {
-        List<UserRoleEntity> userRoleList = userRoleService.getByUserId(userId);
-        model.addAttribute("userRoleList", userRoleList);
         model.addAttribute("userId", userId);
-        return "sys/assign_role";
+        return "sys/user/assignRole";
     }
     /**
      * 给用户分配角色
